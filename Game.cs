@@ -17,7 +17,7 @@ namespace Project_EM
         public List<Plane3D> gameObject;
         public int w, h;
         public Plane3D testObject;
-        public System.Diagnostics.Stopwatch watch, watch2;
+        public System.Diagnostics.Stopwatch watch, watch2, spamTimer;
         public List<Cube> cubes;
         public int frames = 0;
         public float angle = 0;
@@ -34,7 +34,8 @@ namespace Project_EM
             this.name = title;
             gameObject = new List<Plane3D>();
             cubes = new List<Cube>();
-
+            spamTimer = new System.Diagnostics.Stopwatch();
+            spamTimer.Start();
             this.KeyDown += window_KeyDown;
 
             //testObject aanmaken
@@ -68,7 +69,7 @@ namespace Project_EM
             Vector4 position = new Vector4(P1.x,P1.y,0f, 1.0f);
             GL.Light(LightName.Light0, LightParameter.Position, position);
             Vector4 ambient0 = new Vector4(5f, 5f, 5f, 1.0f);
-            Vector4 diffuse0 = new Vector4(10f, 10f, 10f, 1.0f);
+            Vector4 diffuse0 = new Vector4(8f, 8f, 8f, 1.0f);
             Vector4 specular0 = new Vector4(1f, 1f, 1f, 1.0f);
             GL.Light(LightName.Light0, LightParameter.Diffuse, diffuse0);
             GL.Light(LightName.Light0, LightParameter.Specular, specular0);
@@ -98,7 +99,7 @@ namespace Project_EM
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             updateCamera();
-            GL.ClearColor(Color.Blue);
+            GL.ClearColor(Color.SkyBlue);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.MatrixMode(MatrixMode.Modelview);// initiate modelview
             GL.LoadIdentity(); //load as identity Use GL.MultMatrix(ref TransformationMatrix);
@@ -180,10 +181,27 @@ namespace Project_EM
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             base.OnUpdateFrame(e);
-            KeyboardState currentKeyboardState = Keyboard.GetState();
-            if (currentKeyboardState.IsKeyDown(Key.Up))
+            setPlayerMove(Keyboard.GetState());
+            P1.updatePhysics();
+            //gamelogic
+
+        }
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            base.OnClosing(e);
+            this.Dispose();
+        }
+        public void setPlayerMove(KeyboardState currentKeyboardState)
+        {
+            if (currentKeyboardState.IsKeyDown(Key.Up) || currentKeyboardState.IsKeyDown(Key.Space))
             {
-                P1.moveY(1);
+                if (spamTimer.ElapsedMilliseconds > 100)
+                {
+                    P1.Jump();
+                }
+                spamTimer.Restart();
+                //P1.updatePhysics();
+                //P1.moveY(1);
             }
             if (currentKeyboardState.IsKeyDown(Key.Down))
             {
@@ -201,13 +219,6 @@ namespace Project_EM
             {
                 this.Close();
             }
-            //gamelogic
-
-        }
-        protected override void OnClosing(CancelEventArgs e)
-        {
-            base.OnClosing(e);
-            this.Dispose();
         }
         public void updateCamera()
         {

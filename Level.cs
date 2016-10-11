@@ -10,7 +10,7 @@ namespace Project_EM
 {
     class LevelObject
     {
-        public List<Cube> geometry;
+        public List<Cube> geometry { get; set; }
         public Vector4 diffuse, ambient, specular;
         public float dif = 0.4f, spec = 0.7f;
         public LevelObject(float width, int amountX, int amounY, Vector3 color, Vector3 Origin)

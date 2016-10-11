@@ -33,6 +33,8 @@ namespace Project_EM
             Level l1 = new Level();
             g1.setLevel(l1);
             g1.setPlayer(p1);
+            p1.setEnvironment(l1);
+            p1.setPlayerStart(5, 5);
 
             g1.Run();
         }

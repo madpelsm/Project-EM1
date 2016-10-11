@@ -65,9 +65,13 @@ namespace Project_EM
     class Cube
     {
         public Cubic3D cube;
+        public Vector3 MMP;
+        public float width;
         public Cube(Vector3 MMP, float width)
         {
-           cube = new Cubic3D(width, width, width, MMP);
+            cube = new Cubic3D(width, width, width, MMP);
+            this.MMP = MMP;
+            this.width = width;
         }
         public void draw()
         {
