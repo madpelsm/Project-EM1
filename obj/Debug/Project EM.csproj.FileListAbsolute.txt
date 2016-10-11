@@ -1,0 +1,8 @@
+c:\users\mathias\documents\visual studio 2015\Projects\Project EM\Project EM\bin\Debug\Project EM.exe.config
+c:\users\mathias\documents\visual studio 2015\Projects\Project EM\Project EM\obj\Debug\Project EM.csprojResolveAssemblyReference.cache
+c:\users\mathias\documents\visual studio 2015\Projects\Project EM\Project EM\bin\Debug\Project EM.exe
+c:\users\mathias\documents\visual studio 2015\Projects\Project EM\Project EM\bin\Debug\Project EM.pdb
+c:\users\mathias\documents\visual studio 2015\Projects\Project EM\Project EM\bin\Debug\OpenGL.dll
+c:\users\mathias\documents\visual studio 2015\Projects\Project EM\Project EM\bin\Debug\OpenTK.dll
+c:\users\mathias\documents\visual studio 2015\Projects\Project EM\Project EM\obj\Debug\Project EM.exe
+c:\users\mathias\documents\visual studio 2015\Projects\Project EM\Project EM\obj\Debug\Project EM.pdb
