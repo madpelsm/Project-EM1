@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
-//https://randomcodingprojects.wordpress.com/2014/03/17/opengl-first-person-part-7/
 namespace Project_EM
 {
 

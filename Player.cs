@@ -16,19 +16,35 @@ namespace Project_EM
         public float scale = 1f;
         public float x, y,playerWidth,xFinal,yFinal;
         public Level environment;
-        public float gravity = 3f,jumpHeight =3f;
-        private System.Diagnostics.Stopwatch physicsTimer,gravityTimer;
+        public float gravity = 0.004f, jumpHeight = 2f, lastDirection, globalFriction = 0.01f, slipDuration = 200,accelDur = 200,accelFriction = 0.01f;
+        private System.Diagnostics.Stopwatch physicsTimer, gravityTimer;
+        
+        public System.Diagnostics.Stopwatch acceleratorX, decceleratorX;
+        private Vector4 ambient, diffuse, specular;
         public Player()
         {
             cube = new List<Cube>();
             genPlayer();
+            physicsTimer = new System.Diagnostics.Stopwatch();
+            physicsTimer.Start();
             gravityTimer = new System.Diagnostics.Stopwatch();
             gravityTimer.Start();
+            acceleratorX = new System.Diagnostics.Stopwatch();
+            decceleratorX = new System.Diagnostics.Stopwatch();
+            float r = 0.1f, g = 0.1f, b = 0.05f;
+            float spec = 3f, dif = 2f;
+            specular = new Vector4(r, g, b, 1f);
+            diffuse = new Vector4(r/dif, g/dif, b/dif, 1f);
+            ambient = new Vector4(r/spec, g/spec, b/spec, 1f);
+
+
+
+
         }
         public void genPlayer()
         {
             x = 0;y = 0;
-            playerWidth = 0.5f;
+            playerWidth = 0.8f;
             //always generate in origin, translate in draw
             Cube c1 = new Cube(new Vector3(0, 0, 0),playerWidth);
             cube.Add(c1);
@@ -45,31 +61,34 @@ namespace Project_EM
                 foreach (Cube c in cube)
                 {
                     GL.Translate(new Vector3(xFinal, yFinal, 0));
-                    GL.Color3(new Vector3(0.3f, 0.9f, 0.8f));
+
+                    GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Ambient, ambient);
+                    GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Diffuse, diffuse);
+                    GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Specular, specular);
                     c.draw();
                 }
             }
         }
         public void Jump()
         {
-            physicsTimer = new System.Diagnostics.Stopwatch();
-            physicsTimer.Start();
-
-        }
-        public void updatePhysics()
-        {
+            
             if (physicsTimer != null)
             {
-                if (physicsTimer.ElapsedMilliseconds > 100)
+                if (physicsTimer.ElapsedMilliseconds > 1000)
                 {
-                    physicsTimer = null;
+                    physicsTimer.Restart();
                 }
                 else
                 {
-                    moveY((float)jumpHeight*(1- 1*(physicsTimer.ElapsedMilliseconds / 1000)));
+                    float jump = 0.001f*(float)jumpHeight*(1000-physicsTimer.ElapsedMilliseconds);
+                    moveY(jump);
                 }
             }
-            moveY(-gravity*gravityTimer.ElapsedMilliseconds/1000);//let it fall downward
+        }
+        public void updatePhysics()
+        {
+            float g = -gravity * gravityTimer.ElapsedMilliseconds;
+            moveY(g);//let it fall downward
         }
         public bool canMakeMove()//check if a certain move can be done
         {
@@ -87,13 +106,15 @@ namespace Project_EM
                         float CubeWidth = c.width;
                         float xOfCube = c.MMP.X;
                         float yOfCube = c.MMP.Y;
-                        xCollision = Math.Abs(x - xOfCube) * 2 <= (playerWidth + CubeWidth);
-                        yCollision = Math.Abs(y - yOfCube) * 2 <= (playerWidth + CubeWidth);
-                        if (yCollision && xCollision)
+                        float zOfCube = c.MMP.Z;
+                        xCollision = Math.Abs(x - xOfCube) * 2 < (playerWidth + CubeWidth);
+                        yCollision = Math.Abs(y - yOfCube) * 2 < (playerWidth + CubeWidth);
+                        bool zCol = -playerWidth / 2 <= zOfCube && zOfCube <= playerWidth / 2;
+                        noCollision &= !(xCollision && yCollision&&zCol);
+                        if (xCollision && yCollision)
                         {
-                            gravityTimer.Restart();
+                            physicsTimer.Restart();
                         }
-                        noCollision &= !(xCollision && yCollision);
                     }
                 }
             }
@@ -111,9 +132,47 @@ namespace Project_EM
         {
             this.environment = l;
         }
+        public void accelerateX(float dir)
+        {
+            if (acceleratorX != null)
+            {
+                acceleratorX.Start();
+                if (acceleratorX.ElapsedMilliseconds > accelDur)
+                {
+                    acceleratorX.Stop();
+                }
+
+                float v = accelFriction * speed.X * acceleratorX.ElapsedMilliseconds;
+                moveX(dir*v);
+                lastDirection = dir;
+                
+            }
+        }
+        public void decelerateX()
+        {
+            
+            if (decceleratorX != null)
+            {
+                decceleratorX.Start();
+                if (decceleratorX.ElapsedMilliseconds > slipDuration)
+                {
+                    decceleratorX.Stop();
+                }
+                else
+                {
+                    float v = globalFriction*speed.X * (slipDuration - decceleratorX.ElapsedMilliseconds);
+                    Console.WriteLine(v);
+                    if (v >= 0)
+                    {
+                        moveX(lastDirection * v);
+                    }
+                }
+
+            }
+        }
         public void moveX(float dir)
         {
-            this.x += speed.X*dir;
+            this.x += dir;
             if (canMakeMove())
             {
                 xFinal = x;
@@ -133,6 +192,7 @@ namespace Project_EM
             else
             {
                 this.y = yFinal;
+                gravityTimer.Restart();
             }
         }
     }
