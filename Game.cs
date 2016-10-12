@@ -17,10 +17,10 @@ namespace Project_EM
         public List<Plane3D> gameObject;
         public int w, h;
         public Plane3D testObject;
-        public System.Diagnostics.Stopwatch watch, watch2;
+        public System.Diagnostics.Stopwatch watch, watch2,updateTimer;
         public List<Cube> cubes;
         public int frames = 0;
-        public float angle = 0;
+        public float angle = 0,updateTick=60f;
         public string name;
         public Level l1;
         public Player P1;
@@ -50,6 +50,8 @@ namespace Project_EM
             watch.Start();
             watch2 = new System.Diagnostics.Stopwatch();
             watch2.Start();
+            //updateTimer = new System.Diagnostics.Stopwatch();
+            //updateTimer.Start();
             VSync = VSyncMode.On;
             //this.WindowBorder = WindowBorder.Hidden;
             x = 0; y = 0;
@@ -70,25 +72,25 @@ namespace Project_EM
         protected void LightRender()
         {
             //Light 0
-            Vector4 position = new Vector4(P1.x,P1.y,0f, 1.0f);
+            Vector4 position = new Vector4(P1.x,P1.y,0f, 4f);
             GL.Light(LightName.Light0, LightParameter.Position, position);
             Vector4 ambient0 = new Vector4(0.7f, 0.7f,0.7f, 1.0f);
-            Vector4 diffuse0 = new Vector4(.8f, .8f, .8f, 1.0f);
-            Vector4 specular0 = new Vector4(0.7f, 0.7f, 0.7f, 1.0f);
+            Vector4 diffuse0 = new Vector4(1f, 1f, 1f, 1.0f);
+            Vector4 specular0 = new Vector4(5f, 5f, 5f, 1.0f);
             GL.Light(LightName.Light0, LightParameter.Diffuse, diffuse0);
             GL.Light(LightName.Light0, LightParameter.Specular, specular0);
-            GL.Light(LightName.Light0, LightParameter.QuadraticAttenuation, 0.5f);
+            GL.Light(LightName.Light0, LightParameter.LinearAttenuation, 5f);
             //Light 1
             GL.Enable(EnableCap.Light1);
             float ff = 3f;
             Vector4 ambient = new Vector4(3f, 3f, 3f, 1.0f);
-            Vector4 specular = new Vector4(ff, ff, ff, 1.0f);
-            Vector4 diffuse = new Vector4(2f, 2f, 2f, 1f);
+            Vector4 specular = new Vector4(1f, 1f, 1f, 1.0f);
+            Vector4 diffuse = new Vector4(1f, 1f, 1f, 1f);
             GL.Light(LightName.Light1, LightParameter.Position, new Vector4(5f, 10f, 0f,1f));
             GL.Light(LightName.Light1, LightParameter.Ambient, ambient);
             GL.Light(LightName.Light1, LightParameter.Diffuse, diffuse);
             GL.Light(LightName.Light1, LightParameter.Specular, specular);
-            GL.Light(LightName.Light1, LightParameter.QuadraticAttenuation, 0.02f);
+            GL.Light(LightName.Light1, LightParameter.LinearAttenuation, 0.02f);
             //Light 2
             GL.Enable(EnableCap.Light2);
             Vector4 ambient2 = new Vector4(4f, 4f, 4f, 1.0f);
@@ -159,16 +161,14 @@ namespace Project_EM
                 P1.draw();
             }
             frames++;
-
-            
-            
             this.SwapBuffers();
             if (watch.ElapsedMilliseconds > 1000)
             {
                 
-                Console.WriteLine(frames);
+                Console.WriteLine(frames+" FPS");
 
                 this.Title = name + " " + frames + "FPS";
+
                 frames = 0;
                 watch.Restart();  
             }
@@ -178,16 +178,19 @@ namespace Project_EM
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             base.OnUpdateFrame(e);
-            if (cameraControl) { 
-                Vector2 mouseDelta = lastMousePos - new Vector2(Mouse.GetCursorState().X, Mouse.GetCursorState().Y);
-                mouseX -= mouseLookSensitivity * mouseDelta.X;
-                mouseY += mouseLookSensitivity * mouseDelta.Y;
-                resetCursor();
-            }
-            cameraMove(Keyboard.GetState());
-            updateCamera();
-            setPlayerMove(Keyboard.GetState());
-            P1.updatePhysics();
+            //float deltaT = (float)updateTimer.ElapsedTicks / System.Diagnostics.Stopwatch.Frequency;            
+                if (cameraControl)
+                {
+                    Vector2 mouseDelta = lastMousePos - new Vector2(Mouse.GetCursorState().X, Mouse.GetCursorState().Y);
+                    mouseX -= mouseLookSensitivity * mouseDelta.X;
+                    mouseY += mouseLookSensitivity * mouseDelta.Y;
+                    resetCursor();
+                }
+                cameraMove(Keyboard.GetState());
+                updateCamera();
+                setPlayerMove(Keyboard.GetState());
+                P1.updatePhysics();
+            
             //gamelogic
 
         }
@@ -239,14 +242,14 @@ namespace Project_EM
             }
             if (currentKeyboardState.IsKeyDown(Key.Left) || currentKeyboardState.IsKeyDown(Key.A))
             {
+
                 P1.decceleratorX.Restart();
                 P1.accelerateX(-1f);
             }
             if (!(currentKeyboardState.IsKeyDown(Key.Left) || currentKeyboardState.IsKeyDown(Key.A))&&!(currentKeyboardState.IsKeyDown(Key.Right) || currentKeyboardState.IsKeyDown(Key.D)) )
             {
-                
-                P1.decelerateX();
                 P1.acceleratorX.Restart();
+                P1.decelerateX();
             }
             if (currentKeyboardState.IsKeyDown(Key.Escape))
             {
@@ -276,7 +279,7 @@ namespace Project_EM
             GL.MultMatrix(ref perspective);
 
             // Setup Camera
-            Matrix4 camera = Matrix4.LookAt(new Vector3(P1.x,1f,30f), new Vector3(P1.xFinal, P1.yFinal+1f, 0f), Vector3.UnitY);
+            Matrix4 camera = Matrix4.LookAt(new Vector3(P1.x,4f,30f), new Vector3(P1.xFinal, P1.yFinal+1f, 0f), Vector3.UnitY);
             GL.MultMatrix(ref camera);
             // So far Projection * Camera * modelView (which is identity up to now)
 

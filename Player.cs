@@ -16,13 +16,14 @@ namespace Project_EM
         public float scale = 1f;
         public float x, y,playerWidth,xFinal,yFinal;
         public Level environment;
-        public float gravity = 0.004f, jumpHeight = 2f, lastDirection, globalFriction = 0.01f, slipDuration = 200,accelDur = 200,accelFriction = 0.01f;
+        public float gravity = 2f, jumpHeight = 1.4f, lastDirection, globalFriction = 0.001f, slipDuration = 300,accelDur = 400,accelFriction = 1f;
         private System.Diagnostics.Stopwatch physicsTimer, gravityTimer;
         
         public System.Diagnostics.Stopwatch acceleratorX, decceleratorX;
         private Vector4 ambient, diffuse, specular;
-        public Player()
+        public Player(float width)
         {
+            playerWidth = width;
             cube = new List<Cube>();
             genPlayer();
             physicsTimer = new System.Diagnostics.Stopwatch();
@@ -31,7 +32,7 @@ namespace Project_EM
             gravityTimer.Start();
             acceleratorX = new System.Diagnostics.Stopwatch();
             decceleratorX = new System.Diagnostics.Stopwatch();
-            float r = 0.1f, g = 0.1f, b = 0.05f;
+            float r = 0.1f, g = 0.01f, b = 0.01f;
             float spec = 3f, dif = 2f;
             specular = new Vector4(r, g, b, 1f);
             diffuse = new Vector4(r/dif, g/dif, b/dif, 1f);
@@ -61,7 +62,7 @@ namespace Project_EM
                 foreach (Cube c in cube)
                 {
                     GL.Translate(new Vector3(xFinal, yFinal, 0));
-
+                    GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Emission, new Vector4(0.05f, 0.05f, 0.05f, 0.5f));
                     GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Ambient, ambient);
                     GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Diffuse, diffuse);
                     GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Specular, specular);
@@ -87,7 +88,7 @@ namespace Project_EM
         }
         public void updatePhysics()
         {
-            float g = -gravity * gravityTimer.ElapsedMilliseconds;
+            float g = -gravity * (0.001f*gravityTimer.ElapsedMilliseconds);
             moveY(g);//let it fall downward
         }
         public bool canMakeMove()//check if a certain move can be done
@@ -107,13 +108,14 @@ namespace Project_EM
                         float xOfCube = c.MMP.X;
                         float yOfCube = c.MMP.Y;
                         float zOfCube = c.MMP.Z;
-                        xCollision = Math.Abs(x - xOfCube) * 2 < (playerWidth + CubeWidth);
-                        yCollision = Math.Abs(y - yOfCube) * 2 < (playerWidth + CubeWidth);
+                        xCollision = Math.Abs(x - xOfCube) * 2 <= (playerWidth + CubeWidth);
+                        yCollision = Math.Abs(y - yOfCube) * 2 <= (playerWidth + CubeWidth);
                         bool zCol = -playerWidth / 2 <= zOfCube && zOfCube <= playerWidth / 2;
                         noCollision &= !(xCollision && yCollision&&zCol);
                         if (xCollision && yCollision)
                         {
                             physicsTimer.Restart();
+                            
                         }
                     }
                 }
@@ -122,9 +124,6 @@ namespace Project_EM
             {
                 Console.WriteLine("environment not set");
                 //notify is environment was not set
-            }
-            if (!noCollision)
-            {
             }
             return noCollision;
         }
@@ -141,8 +140,7 @@ namespace Project_EM
                 {
                     acceleratorX.Stop();
                 }
-
-                float v = accelFriction * speed.X * acceleratorX.ElapsedMilliseconds;
+                float v = accelFriction * speed.X * acceleratorX.ElapsedMilliseconds/accelDur;
                 moveX(dir*v);
                 lastDirection = dir;
                 
@@ -150,7 +148,7 @@ namespace Project_EM
         }
         public void decelerateX()
         {
-            
+
             if (decceleratorX != null)
             {
                 decceleratorX.Start();
@@ -160,8 +158,7 @@ namespace Project_EM
                 }
                 else
                 {
-                    float v = globalFriction*speed.X * (slipDuration - decceleratorX.ElapsedMilliseconds);
-                    Console.WriteLine(v);
+                    float v = globalFriction * speed.X * (slipDuration - decceleratorX.ElapsedMilliseconds);
                     if (v >= 0)
                     {
                         moveX(lastDirection * v);
@@ -170,9 +167,9 @@ namespace Project_EM
 
             }
         }
-        public void moveX(float dir)
+        public void moveX(float speedX)
         {
-            this.x += dir;
+            this.x += speedX;
             if (canMakeMove())
             {
                 xFinal = x;
@@ -180,6 +177,7 @@ namespace Project_EM
             else
             {
                 this.x = xFinal;
+                updatePhysics();
             }
         }
         public void moveY(float dir)

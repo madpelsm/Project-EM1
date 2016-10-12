@@ -26,7 +26,7 @@ namespace Project_EM
         }
         public void draw()
         {
-            GL.Begin(PrimitiveType.TriangleStrip);
+            GL.Begin(PrimitiveType.QuadStrip);
             for (int i = 0; i < P.Length; i++)
             {
                 GL.Normal3(Cross(P[0],P[1]));
