@@ -52,7 +52,30 @@ namespace Project_EM
             l1.Add(new LevelObject(1, 1, 1, new Vector3(0.05f, 0.05f, 0.00f), new Vector3(19f, 3f, 0.0f)));
             l1.Add(new LevelObject(1, 1, 2, new Vector3(0.09f, 0.01f, 0.00f), new Vector3(19f, 1f, -1f)));
             l1.Add(new LevelObject(0.4f, 1, 1, new Vector3(0.21f, 0.01f, 0.00f), new Vector3(19f, 3f, 0.4f)));
+            l1.Add(new LevelObject(1f, 1, 1, new Vector3(0.4f, 0.4f, 0.6f), new Vector3(20f, 4f, 0f)));
             l1.Add(new LevelObject(0.4f, 1, 2, new Vector3(0.3f, 0.0f, 0.00f), new Vector3(17f, 1f, 0.4f)));//cherries
+            //E
+            l1.Add(new LevelObject(1f, 3, 1, new Vector3(0.3f, 0.0f, 0.00f), new Vector3(22f, 1f, 0f)));
+            l1.Add(new LevelObject(1f, 1, 4, new Vector3(0.3f, 0.0f, 0.00f), new Vector3(22f, 2f, 0f)));
+            l1.Add(new LevelObject(1f, 2, 1, new Vector3(0.3f, 0.0f, 0.00f), new Vector3(23f, 3f, 0f)));
+            l1.Add(new LevelObject(1f, 2, 1, new Vector3(0.3f, 0.0f, 0.00f), new Vector3(23f, 5f, 0f)));
+            //L
+
+            l1.Add(new LevelObject(1f, 3, 1, new Vector3(0.3f, 0.0f, 0.00f), new Vector3(26f, 1f, 0f)));
+            l1.Add(new LevelObject(1f, 1, 4, new Vector3(0.3f, 0.0f, 0.00f), new Vector3(26f, 2f, 0f)));
+            //i
+            l1.Add(new LevelObject(1f, 1, 5, new Vector3(0.3f, 0.0f, 0.00f), new Vector3(30f, 1f, 0f)));
+            //N
+            l1.Add(new LevelObject(1f, 1, 5, new Vector3(0.3f, 0.0f, 0.00f), new Vector3(32f, 1f, 0f)));
+            l1.Add(new LevelObject(1f, 1, 1, new Vector3(0.3f, 0.0f, 0.00f), new Vector3(33f, 4f, 0f)));
+            l1.Add(new LevelObject(1f, 1, 1, new Vector3(0.3f, 0.0f, 0.00f), new Vector3(34f, 3f, 0f)));
+            l1.Add(new LevelObject(1f, 1, 5, new Vector3(0.3f, 0.0f, 0.00f), new Vector3(35f, 1f, 0f)));
+            //E
+            l1.Add(new LevelObject(1f, 3, 1, new Vector3(0.3f, 0.0f, 0.00f), new Vector3(37f, 1f, 0f)));
+            l1.Add(new LevelObject(1f, 1, 4, new Vector3(0.3f, 0.0f, 0.00f), new Vector3(37f, 2f, 0f)));
+            l1.Add(new LevelObject(1f, 2, 1, new Vector3(0.3f, 0.0f, 0.00f), new Vector3(38f, 3f, 0f)));
+            l1.Add(new LevelObject(1f, 2, 1, new Vector3(0.3f, 0.0f, 0.00f), new Vector3(38f, 5f, 0f)));
+
             l1.Add(new LevelObject(1, 1, 4, new Vector3(0.1f, 0.1f, 0.1f), new Vector3(50f, 0f, -0.5f)));
             l1.Add(new LevelObject(1, 1, 4, new Vector3(0.2f, 0.2f, 0.2f), new Vector3(50.5f, 0f, 0f)));
             g1.setLevel(l1);

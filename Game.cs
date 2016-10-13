@@ -81,7 +81,6 @@ namespace Project_EM
             GL.Light(LightName.Light0, LightParameter.LinearAttenuation, 5f);
             //Light 1
             GL.Enable(EnableCap.Light1);
-            float ff = 3f;
             Vector4 ambient = new Vector4(3f, 3f, 3f, 1.0f);
             Vector4 specular = new Vector4(1f, 1f, 1f, 1.0f);
             Vector4 diffuse = new Vector4(1f, 1f, 1f, 1f);
