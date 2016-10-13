@@ -20,7 +20,7 @@ namespace Project_EM
         private System.Diagnostics.Stopwatch physicsTimer, gravityTimer;
         
         public System.Diagnostics.Stopwatch acceleratorX, decceleratorX;
-        private Vector4 ambient, diffuse, specular;
+        public Vector4 ambient, diffuse, specular;
         public Player(float width)
         {
             playerWidth = width;
@@ -44,9 +44,6 @@ namespace Project_EM
         }
         public void genPlayer()
         {
-            x = 0;y = 0;
-            playerWidth = 0.8f;
-            //always generate in origin, translate in draw
             Cube c1 = new Cube(new Vector3(0, 0, 0),playerWidth);
             cube.Add(c1);
         }
@@ -59,6 +56,7 @@ namespace Project_EM
         {
             if (cube != null)
             {
+                GL.PushMatrix();
                 foreach (Cube c in cube)
                 {
                     GL.Translate(new Vector3(xFinal, yFinal, 0));
@@ -68,6 +66,7 @@ namespace Project_EM
                     GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Specular, specular);
                     c.draw();
                 }
+                GL.PopMatrix();
             }
         }
         public void Jump()
@@ -140,7 +139,8 @@ namespace Project_EM
                 {
                     acceleratorX.Stop();
                 }
-                float v = accelFriction * speed.X * acceleratorX.ElapsedMilliseconds/accelDur;
+                float v = accelFriction * speed.X * (acceleratorX.ElapsedMilliseconds/accelDur+0.001f);
+
                 moveX(dir*v);
                 lastDirection = dir;
                 

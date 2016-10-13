@@ -14,13 +14,12 @@ namespace Project_EM
 {
     class Game : OpenTK.GameWindow
     {
-        public List<Plane3D> gameObject;
+        public List<Bullet> bullets;
         public int w, h;
-        public Plane3D testObject;
         public System.Diagnostics.Stopwatch watch, watch2,updateTimer;
         public List<Cube> cubes;
         public int frames = 0;
-        public float angle = 0,updateTick=60f;
+        public float angle = 0,updateTick=60f,bulletSize=0.3f;
         public string name;
         public Level l1;
         public Player P1;
@@ -42,7 +41,7 @@ namespace Project_EM
             cameraX = 10f;
             cameraZ = 30f;
             mouseLookSensitivity = 0.01f;
-            gameObject = new List<Plane3D>();
+            bullets = new List<Bullet>();
             cubes = new List<Cube>();
             //CursorVisible = false;
             //testObject aanmaken
@@ -50,8 +49,8 @@ namespace Project_EM
             watch.Start();
             watch2 = new System.Diagnostics.Stopwatch();
             watch2.Start();
-            //updateTimer = new System.Diagnostics.Stopwatch();
-            //updateTimer.Start();
+            updateTimer = new System.Diagnostics.Stopwatch();
+            updateTimer.Start();
             VSync = VSyncMode.On;
             //this.WindowBorder = WindowBorder.Hidden;
             x = 0; y = 0;
@@ -128,16 +127,17 @@ namespace Project_EM
             GL.PopMatrix();
             //GL.Rotate(angle, Vector3.UnitX);
             //GL.Rotate((float)angle,Vector3.UnitY);
-            if (gameObject != null)
+            if (bullets != null)
             {
-                if (gameObject.Count != 0)
+                if (bullets.Count != 0)
                 {
-                    foreach (Plane3D o in gameObject)
+                    foreach (Bullet o in bullets)
                     {
                         o.draw();
                     }
                 }
             }
+
             GL.LoadIdentity();
             //Matrix4 rot = Matrix4.CreateRotationY(angle);
             //GL.MultMatrix(ref rot);
@@ -151,7 +151,6 @@ namespace Project_EM
                     }
                 }
             }
-            GL.PopMatrix();
             if (l1 != null)
             {
                 l1.draw();
@@ -186,6 +185,23 @@ namespace Project_EM
                     mouseY += mouseLookSensitivity * mouseDelta.Y;
                     resetCursor();
                 }
+            if (bullets != null)
+            {
+                for(int i=0;i<bullets.Count;i++)
+                {
+                    Bullet b = bullets[i];
+                    float oX = b.xFinal;
+                    float oY = b.yFinal;
+                    b.accelerateX();
+                    if (Math.Abs(oX - b.xFinal) ==0 && Math.Abs(oY - b.yFinal) ==0 || b.xFinal<0|| b.xFinal>500)
+                    {
+                        bullets.Remove(b);
+                        Console.WriteLine("bullet Removed, location dx"+oX+","+b.xFinal);
+                        i--;
+                    }
+                    
+                }
+            }
                 cameraMove(Keyboard.GetState());
                 updateCamera();
                 setPlayerMove(Keyboard.GetState());
@@ -226,6 +242,24 @@ namespace Project_EM
         }
         public void setPlayerMove(KeyboardState currentKeyboardState)
         {
+            if (currentKeyboardState.IsKeyDown(Key.Q))
+            {
+                if (updateTimer.ElapsedMilliseconds > 200)
+                {
+
+                    updateTimer.Restart();
+                    bullets.Add(new Bullet(bulletSize, -1f, P1));
+                }
+            }
+            if (currentKeyboardState.IsKeyDown(Key.E))
+            {
+                if (updateTimer.ElapsedMilliseconds > 200)
+                {
+
+                    updateTimer.Restart();
+                    bullets.Add(new Bullet(bulletSize, 1f, P1));
+                }
+            }
             if (currentKeyboardState.IsKeyDown(Key.Up) || currentKeyboardState.IsKeyDown(Key.W) || currentKeyboardState.IsKeyDown(Key.Space))
             {
                 
@@ -275,7 +309,7 @@ namespace Project_EM
             GL.MatrixMode(MatrixMode.Projection);
             // Setup a perspective view
             GL.LoadIdentity();
-            Matrix4 perspective = Matrix4.CreatePerspectiveFieldOfView(0.50f, (float)w / h, 1, 4000);
+            Matrix4 perspective = Matrix4.CreatePerspectiveFieldOfView(0.50f, (float)w / h, 5, 50);
             GL.MultMatrix(ref perspective);
 
             // Setup Camera
@@ -300,6 +334,8 @@ namespace Project_EM
             GL.Enable(EnableCap.Light0);
             GL.ShadeModel(ShadingModel.Smooth);
             GL.Enable(EnableCap.PolygonSmooth);
+            GL.Enable(EnableCap.CullFace);
+            GL.CullFace(CullFaceMode.Back);
 
         }
     }

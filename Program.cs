@@ -28,7 +28,7 @@ namespace Project_EM
             Cube blokje2 = new Cube(new Vector3(2, 0, 0), 1);
             Cube blokje3 = new Cube(new Vector3(3, 0, 0), 1);
 
-            Player p1 = new Player(0.4f);
+            Player p1 = new Player(0.6f); // define player width here
             //new Level init
             Level l1 = new Level();
             //design level
